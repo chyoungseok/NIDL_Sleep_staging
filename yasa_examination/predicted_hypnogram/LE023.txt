@@ -1,2 +1,2 @@
 ground_truth  predicted
-698  643
+624  624
