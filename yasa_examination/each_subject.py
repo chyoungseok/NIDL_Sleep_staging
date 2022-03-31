@@ -32,7 +32,8 @@ def by_eeg_eog(now_subject_num):
 
     # remove the EOG, EMG, and EKG channels
     # raw.drop_channels(['ROC-A1', 'LOC-A2', 'EMG1-EMG2', 'EKG-R-EKG-L'])
-    eogs = ['no_eog', 'SO', 'SO-0', 'SO-1', 'IO']
+    # eogs = ['no_eog', 'SO', 'SO-0', 'SO-1', 'IO']
+    eogs = ['no_eog', 'LOC-0', 'LOC-1', 'ROC-0', 'ROC-1']
     if '박규희' in now_edf:
         eegs = ['C3', 'C4']
     else:
