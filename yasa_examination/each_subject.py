@@ -149,9 +149,9 @@ def by_eeg_eog(now_subject_num):
                     # ground_truth_hypno
 
                     yasa.plot_hypnogram(ground_truth_hypno)
-                    plt.title(eog+'_'+eeg+'_'+'ground_truth')
+                    plt.title(eog+'_'+eeg+'_'+'ground_truth',  fontsize=30)
                     yasa.plot_hypnogram(hypno_pred)
-                    plt.title(eog+'_'+eeg+'_'+'predicted')
+                    plt.title(eog+'_'+eeg+'_'+'predicted', fontsize=30)
 
                     print("Length of ground_truth: {}".format(len(ground_truth_hypno)))
                     print("Length of predicted: {}".format(len(hypno_pred)))
