@@ -2,7 +2,7 @@ Log for model in: /home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_up
 --------------------------------------------------------------------------------
 >>> Logged by: 'run' in 'predict_one.py'
 Args dump: 
-{'f': '/home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/Traces.edf', 'o': '/home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files/a1a9dff907883563a7cee0f5c674e79c018e95f72ea90ecb9bb03aafeff1e20e.npy', 'header_file_name': None, 'logging_out_path': '/home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files/a1a9dff907883563a7cee0f5c674e79c018e95f72ea90ecb9bb03aafeff1e20e.log', 'channels': ['C3++SO', 'C4++SO', 'C3++IO', 'C4++IO'], 'auto_channel_grouping': None, 'auto_reference_types': None, 'strip_func': 'trim_psg_trailing', 'model': 'u-sleep:1.0', 'project_dir': PosixPath('/home/usleep/u-sleep-webserver/src/usleep/usleep/models/u-sleep-1.0/model'), 'data_per_prediction': 3840, 'num_GPUs': 0, 'force_GPU': '', 'no_argmax': False, 'weights_file_name': None}
+{'f': '/home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/LE014.edf', 'o': '/home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files/0b1fa9994e0bcf003bcdc342d51dc978adfce9512f8ff7f9ecff5549ec1b7c56.npy', 'header_file_name': None, 'logging_out_path': '/home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files/0b1fa9994e0bcf003bcdc342d51dc978adfce9512f8ff7f9ecff5549ec1b7c56.log', 'channels': ['C3++SO', 'C4++SO', 'C3++IO', 'C4++IO'], 'auto_channel_grouping': None, 'auto_reference_types': None, 'strip_func': 'trim_psg_trailing', 'model': 'u-sleep:1.0', 'project_dir': PosixPath('/home/usleep/u-sleep-webserver/src/usleep/usleep/models/u-sleep-1.0/model'), 'data_per_prediction': 3840, 'num_GPUs': 0, 'force_GPU': '', 'no_argmax': False, 'weights_file_name': None}
 --------------------------------------------------------------------------------
 >>> Logged by: '__init__' in 'hparams.py'
 YAML path:    /home/usleep/u-sleep-webserver/src/usleep/usleep/models/u-sleep-1.0/model/hyperparameters/hparams.yaml
@@ -30,7 +30,7 @@ Found:
 >>> Logged by: 'get_sleep_study' in 'predict_one.py'
 Loading channels: ['C3', 'SO', 'C4', 'IO']
 Channel groups: [ChannelSet(channel_names=['C3', 'SO'], channel_indices=[0, 1]), ChannelSet(channel_names=['C4', 'SO'], channel_indices=[2, 1]), ChannelSet(channel_names=['C3', 'IO'], channel_indices=[0, 3]), ChannelSet(channel_names=['C4', 'IO'], channel_indices=[2, 3])]
-Study loaded with shape: (2565120, 4)
+Study loaded with shape: (2641920, 4)
 Channels: (ChannelMontage(C3-None), ChannelMontage(SO-None), ChannelMontage(C4-None), ChannelMontage(IO-None)) (org names: ['C3', 'SO', 'C4', 'IO'])
 --------------------------------------------------------------------------------
 >>> Logged by: 'run' in 'predict_one.py'
@@ -42,7 +42,7 @@ Creating new model of type 'USleep'
 >>> Logged by: 'log' in 'usleep.py'
 USleep Model Summary
 -------------------
-N periods:         668
+N periods:         688
 Input dims:        3840
 N channels:        2
 N classes:         5
@@ -58,10 +58,10 @@ l2 reg:            None
 Padding:           same
 Conv activation:   elu
 Receptive field:   73719
-Seq length.:       2565120
+Seq length.:       2641920
 N params:          3119351
-Input:             Tensor("input_1:0", shape=(None, 668, 3840, 2), dtype=float32)
-Output:            Tensor("sequence_classification_reshaped/Identity:0", shape=(None, 668, 5), dtype=float32)
+Input:             Tensor("input_1:0", shape=(None, 688, 3840, 2), dtype=float32)
+Output:            Tensor("sequence_classification_reshaped/Identity:0", shape=(None, 688, 5), dtype=float32)
 --------------------------------------------------------------------------------
 >>> Logged by: 'load_from_file' in 'model_init.py'
 Loading parameters from:
@@ -73,20 +73,20 @@ Predicting...
 >>> Logged by: 'predict_study' in 'predict_one.py'
 --- Channel names: ['C3', 'SO']
     Channel inds:  [0, 1]
-    Extracted PSG shape: (1, 668, 3840, 2)
+    Extracted PSG shape: (1, 688, 3840, 2)
 --- Channel names: ['C4', 'SO']
     Channel inds:  [2, 1]
-    Extracted PSG shape: (1, 668, 3840, 2)
+    Extracted PSG shape: (1, 688, 3840, 2)
 --- Channel names: ['C3', 'IO']
     Channel inds:  [0, 3]
-    Extracted PSG shape: (1, 668, 3840, 2)
+    Extracted PSG shape: (1, 688, 3840, 2)
 --- Channel names: ['C4', 'IO']
     Channel inds:  [2, 3]
-    Extracted PSG shape: (1, 668, 3840, 2)
+    Extracted PSG shape: (1, 688, 3840, 2)
 --------------------------------------------------------------------------------
 >>> Logged by: 'run' in 'predict_one.py'
---> Predicted shape: (668, 1)
+--> Predicted shape: (688, 1)
 --------------------------------------------------------------------------------
 >>> Logged by: 'save_prediction' in 'predict_one.py'
-* Saving prediction array of shape (668, 1) to /home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files/a1a9dff907883563a7cee0f5c674e79c018e95f72ea90ecb9bb03aafeff1e20e.npy
+* Saving prediction array of shape (688, 1) to /home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files/0b1fa9994e0bcf003bcdc342d51dc978adfce9512f8ff7f9ecff5549ec1b7c56.npy
 * Using save function: save_npy
