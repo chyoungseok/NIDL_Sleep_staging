@@ -1,4 +1,5 @@
 import os
+from turtle import goto
 from mne.io.edf.edf import _edf_str
 import pandas as pd
 import mne
@@ -58,8 +59,11 @@ def get_yasa_hypnogram(path_subjects_edf, subject_edf, meas_time_df):
 
     os.mkdir('D:\\USC\\code_mine\\Model_validation\\YASA\\hypnograms\\predicted\\'+subject)
     for eog in eogs:
-        if not(eog in chs):
+        if eog == 'no_eog':
+            eog = 'no_eog'
+        elif not(eog in chs):
             continue
+
         for eeg in eegs:
             if not(eeg in chs):
                 continue
