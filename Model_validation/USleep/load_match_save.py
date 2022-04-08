@@ -90,6 +90,8 @@ def for_vd(path_subjects_edf, subject_edf, meas_time_df, path_save):
     hypno_end = meas_time_df.loc[subject[0:5], 'hypno_end']
     edf_start = meas_time_df.loc[subject[0:5], 'edf_start']
     edf_end = meas_time_df.loc[subject[0:5], 'edf_end']
+    print("hypno_start  hypno_end  edf_start  edf_end")
+    print(f"{hypno_start}   {hypno_end}   {edf_start}   {edf_end}")
 
     hypno_start_sec = str_time_to_seconds(hypno_start)
     hypno_end_sec = str_time_to_seconds(hypno_end)
