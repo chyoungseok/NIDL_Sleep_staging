@@ -17,11 +17,11 @@ def get_acc_matrix(ground_truth, predicted):
     }
     matrix = pd.DataFrame(empty_dic, index=index_names) # empty state
     
-    len_Wake = len(hypno_g[hypno_g==0])
-    len_R = len(hypno_g[hypno_g==4])
-    len_N1 = len(hypno_g[hypno_g==1])
-    len_N2 = len(hypno_g[hypno_g==2])
-    len_N3 = len(hypno_g[hypno_g==3])
+    len_Wake = len(hypno_g[hypno_g==0]) + 1
+    len_R = len(hypno_g[hypno_g==4]) + 1
+    len_N1 = len(hypno_g[hypno_g==1]) + 1
+    len_N2 = len(hypno_g[hypno_g==2]) + 1
+    len_N3 = len(hypno_g[hypno_g==3]) + 1
     
     matrix.loc['Wake', 'Wake'] = round((hypno_p[hypno_g==0] == 0).sum() / len_Wake * 100, 1)
     matrix.loc['Wake', 'R'] = round((hypno_p[hypno_g==0] == 4).sum() / len_Wake * 100, 1)

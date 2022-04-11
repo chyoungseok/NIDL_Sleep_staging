@@ -1,0 +1,92 @@
+Log for model in: /home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files
+--------------------------------------------------------------------------------
+>>> Logged by: 'run' in 'predict_one.py'
+Args dump: 
+{'f': '/home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/VD008.edf', 'o': '/home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files/1c5738217180a0e38d1539c34f490d79942fcb929c9b77a8b7b5e12908c98b42.npy', 'header_file_name': None, 'logging_out_path': '/home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files/1c5738217180a0e38d1539c34f490d79942fcb929c9b77a8b7b5e12908c98b42.log', 'channels': ['C3++SO', 'C4++SO', 'C3++IO', 'C4++IO'], 'auto_channel_grouping': None, 'auto_reference_types': None, 'strip_func': 'trim_psg_trailing', 'model': 'u-sleep:1.0', 'project_dir': PosixPath('/home/usleep/u-sleep-webserver/src/usleep/usleep/models/u-sleep-1.0/model'), 'data_per_prediction': 3840, 'num_GPUs': 0, 'force_GPU': '', 'no_argmax': False, 'weights_file_name': None}
+--------------------------------------------------------------------------------
+>>> Logged by: '__init__' in 'hparams.py'
+YAML path:    /home/usleep/u-sleep-webserver/src/usleep/usleep/models/u-sleep-1.0/model/hyperparameters/hparams.yaml
+--------------------------------------------------------------------------------
+>>> Logged by: 'run' in 'predict_one.py'
+Loading and pre-processing PSG file...
+--------------------------------------------------------------------------------
+>>> Logged by: 'get_sleep_study' in 'predict_one.py'
+Evaluating using parameters:
+{'batch_wise_scaling': False,
+ 'period_length_sec': 30,
+ 'quality_control_func': {'min_max_times_global_iqr': 20,
+                          'quality_control_func': 'clip_noisy_values'},
+ 'scaler': 'RobustScaler',
+ 'set_sample_rate': 128,
+ 'strip_func': {'strip_func_str': 'trim_psg_trailing'}}
+--------------------------------------------------------------------------------
+>>> Logged by: 'get_load_and_group_channels' in 'predict_one.py'
+Processing input channels: ['C3++SO', 'C4++SO', 'C3++IO', 'C4++IO']
+Found:
+-- Load channels: ['C3', 'SO', 'C4', 'IO']
+-- Groups: [['C3', 'SO'], ['C4', 'SO'], ['C3', 'IO'], ['C4', 'IO']]
+-- Types: ['EEG', 'OTHER', 'EEG', 'OTHER']
+--------------------------------------------------------------------------------
+>>> Logged by: 'get_sleep_study' in 'predict_one.py'
+Loading channels: ['C3', 'SO', 'C4', 'IO']
+Channel groups: [ChannelSet(channel_names=['C3', 'SO'], channel_indices=[0, 1]), ChannelSet(channel_names=['C4', 'SO'], channel_indices=[2, 1]), ChannelSet(channel_names=['C3', 'IO'], channel_indices=[0, 3]), ChannelSet(channel_names=['C4', 'IO'], channel_indices=[2, 3])]
+Study loaded with shape: (2526720, 4)
+Channels: (ChannelMontage(C3-None), ChannelMontage(SO-None), ChannelMontage(C4-None), ChannelMontage(IO-None)) (org names: ['C3', 'SO', 'C4', 'IO'])
+--------------------------------------------------------------------------------
+>>> Logged by: 'run' in 'predict_one.py'
+Predicting with 3840 data per prediction
+--------------------------------------------------------------------------------
+>>> Logged by: 'init_model' in 'model_init.py'
+Creating new model of type 'USleep'
+--------------------------------------------------------------------------------
+>>> Logged by: 'log' in 'usleep.py'
+USleep Model Summary
+-------------------
+N periods:         658
+Input dims:        3840
+N channels:        2
+N classes:         5
+Kernel size:       9
+Dilation rate:     1
+CF factor:         1.670
+Init filters:      5
+Depth:             12
+Pool size:         2
+Transition window  1
+Dense activation   tanh
+l2 reg:            None
+Padding:           same
+Conv activation:   elu
+Receptive field:   73719
+Seq length.:       2526720
+N params:          3119351
+Input:             Tensor("input_1:0", shape=(None, 658, 3840, 2), dtype=float32)
+Output:            Tensor("sequence_classification_reshaped/Identity:0", shape=(None, 658, 5), dtype=float32)
+--------------------------------------------------------------------------------
+>>> Logged by: 'load_from_file' in 'model_init.py'
+Loading parameters from:
+/home/usleep/u-sleep-webserver/src/usleep/usleep/models/u-sleep-1.0/model/model/@epoch_10154_val_dice_0.80160.h5
+--------------------------------------------------------------------------------
+>>> Logged by: 'run' in 'predict_one.py'
+Predicting...
+--------------------------------------------------------------------------------
+>>> Logged by: 'predict_study' in 'predict_one.py'
+--- Channel names: ['C3', 'SO']
+    Channel inds:  [0, 1]
+    Extracted PSG shape: (1, 658, 3840, 2)
+--- Channel names: ['C4', 'SO']
+    Channel inds:  [2, 1]
+    Extracted PSG shape: (1, 658, 3840, 2)
+--- Channel names: ['C3', 'IO']
+    Channel inds:  [0, 3]
+    Extracted PSG shape: (1, 658, 3840, 2)
+--- Channel names: ['C4', 'IO']
+    Channel inds:  [2, 3]
+    Extracted PSG shape: (1, 658, 3840, 2)
+--------------------------------------------------------------------------------
+>>> Logged by: 'run' in 'predict_one.py'
+--> Predicted shape: (658, 1)
+--------------------------------------------------------------------------------
+>>> Logged by: 'save_prediction' in 'predict_one.py'
+* Saving prediction array of shape (658, 1) to /home/usleep/u-sleep-webserver/usleep_webserver/uploads/psg_uploads/b4b96d291844/output_files/1c5738217180a0e38d1539c34f490d79942fcb929c9b77a8b7b5e12908c98b42.npy
+* Using save function: save_npy
