@@ -13,7 +13,14 @@ from tqdm.notebook import tqdm
 
 # output
 #   1. "df_nan_sum": pd.DataFrame that contains the information of NaN values which occured during hypnogram 
+
 def update_df(path_C4_txts, C4_txt, df_meas, df_nan_sum):
+
+    df_meas_indexes = df_meas.index
+    if not C4_txt[0:5] in df_meas_indexes:
+        print("there is no edf and scoring for {}".format(C4_txt[0:5]))
+        df_nan_sum.loc[C4_txt[0:5], 'hypno_start'] = 'no edf and ground_truth'
+        return df_nan_sum
 
     temp_df_meas = df_meas.loc[C4_txt[0:5],:]
     hypno_start = temp_df_meas['hypno_start']
@@ -24,6 +31,13 @@ def update_df(path_C4_txts, C4_txt, df_meas, df_nan_sum):
     with open(temp_txt, 'r') as f:
         lines = f.readlines() # Read txt file
         lines = lines[sample_num_to_crop:] # include only valid information which contains the signal values
+    
+    # print(f"{lines[0]}")
+    # print(f"length: {len(lines[0])}")
+    if len(lines[0].split()) < 2:
+        print("No time information --> pass")
+        df_nan_sum.loc[C4_txt[0:5], 'nan_start'] = 'no time infromation'
+        return df_nan_sum
 
     times = []    
     data = []
@@ -43,6 +57,10 @@ def update_df(path_C4_txts, C4_txt, df_meas, df_nan_sum):
 
     nan_df = data_df[nan_condition].index
 
+    if len(nan_df) == 0:
+            print("    -- No QNAN detected !")
+            return df_nan_sum
+
     idx_transition_start = [0]
     idx_transition_end = []
     for iter in range(len(nan_df)-1):
@@ -53,6 +71,7 @@ def update_df(path_C4_txts, C4_txt, df_meas, df_nan_sum):
         idx_transition_end.append(len(nan_df)-1)        
     print(f"    -- {len(idx_transition_start)} segments of QNAN detected !")
 
+    
     nan_start_times = times_df[0][nan_df[idx_transition_start]].values
     nan_end_times = times_df[0][nan_df[idx_transition_end]].values
     nan_times = np.append(nan_start_times, nan_end_times)
