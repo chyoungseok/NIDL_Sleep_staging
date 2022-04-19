@@ -25,11 +25,16 @@ def update_df(path_C4_txts, C4_txt, df_meas, df_nan_sum):
     temp_df_meas = df_meas.loc[C4_txt[0:5],:]
     hypno_start = temp_df_meas['hypno_start']
     edf_start = temp_df_meas['edf_start']
-    sample_num_to_crop = (23 - int(edf_start[0:2]))*3600*500
+
+    sf=500
+    # sample_num_to_crop = (23 - int(edf_start[0:2]))*3600*sf
 
     temp_txt = os.path.join(path_C4_txts, C4_txt)
     with open(temp_txt, 'r') as f:
         lines = f.readlines() # Read txt file
+        while len(lines)/3600/sf < 11:
+            sf -= 100
+        sample_num_to_crop = (23 - int(edf_start[0:2]))*3600*sf
         lines = lines[sample_num_to_crop:] # include only valid information which contains the signal values
     
     # print(f"{lines[0]}")
