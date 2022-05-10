@@ -7,8 +7,9 @@ import yasa
 from tqdm import tqdm
 
 # mne.raw.info에 대한 정보 초기 선언
-ch_names = ['A1', 'A2', 'F3', 'F4', 'C3', 'C4', 'O1', 'O2']
-sfreq = 200
+# ch_names = ['A1', 'A2', 'F3', 'F4', 'C3', 'C4', 'O1', 'O2']
+ch_names = ['C4', 'A1']
+sfreq = {'LE':500, 'LGD':500, 'MRN':500, 'PE':200, 'ST':500}
 ch_types = ['eeg']*len(ch_names)
 
 class txt2np:
@@ -38,7 +39,8 @@ class txt2np:
 
         f_names_txt = self.temp_txt_subjects
         np_all_eeg = np.array([])
-        for now_eeg in tqdm(ch_names, desc='Read txt files and Extract eeg data ... '):
+        # for now_eeg in tqdm(ch_names, desc='Read txt files and Extract eeg data ... '):
+        for now_eeg in ch_names:
             temp_eeg_txt = f_names_txt[f_names_txt.str.contains(now_eeg)].values[0]
             # print(f"now eeg = {now_eeg}, {temp_eeg_txt}")
             f = open(os.path.join(self.path_txt, temp_eeg_txt), encoding='cp949')#'ISO-8859-1')
@@ -48,7 +50,7 @@ class txt2np:
 
             temp_eeg = []
             for line in lines:
-                temp_value = line.strip().split()[2]
+                temp_value = line.strip().split()[-1]
                 if temp_value == '-1.#QNAN':
                     self.QNAN_dic[self.sub_ID] = now_eeg
                     temp_value = 0
@@ -56,27 +58,48 @@ class txt2np:
             
             # Convert valuse in string into values as numpy array of float
             temp_eeg = np.array(temp_eeg, dtype=float)
+            
+            # C4와 A1의 길이가 다른 경우, 짧은 쪽으로 맞춰준다
+            # 측정 시작은 함께 했으니, 시작 지점은 동일하다고 가정
+            # 즉, 두 채널의 길이가 다른 경우, 길이가 더 긴 채널의 끝 부분을 자른다.
+            if len(np_all_eeg)>0 and (len(np_all_eeg) != len(temp_eeg)):
+                if len(np_all_eeg)>len(temp_eeg):
+                    np_all_eeg = np_all_eeg[:-abs(len(np_all_eeg)-len(temp_eeg))]
+                else:
+                    temp_eeg = temp_eeg[:-abs(len(np_all_eeg)-len(temp_eeg))]
+
             np_all_eeg = np.concatenate((np_all_eeg, temp_eeg))
         np_all_eeg = np_all_eeg.reshape([int(len(np_all_eeg)/len(temp_eeg)) , len(temp_eeg)])
         return np_all_eeg
         
 
 class np2raw:
-    def __init__(self, sub_ID):
+    def __init__(self, sub_ID, df_SOL):
         self.sub_ID = sub_ID
+        self.df_SOL = df_SOL
 
     def np2raw(self, np_all_eeg):
         # input: np_all_eeg
         # output: mne.raw instance
-        info = mne.create_info(ch_names, sfreq, ch_types, verbose=None)
+        for key in sfreq:
+            if key in self.sub_ID:
+                temp_sfreq = sfreq[key]
+                break
+        info = mne.create_info(ch_names, temp_sfreq, ch_types, verbose=None)
         info['subject_info'] = {'his_id':self.sub_ID}
         self.raw = mne.io.RawArray(np_all_eeg, info)
+        self.temp_sfreq = temp_sfreq
 
     def re_ref(self):
-        self.raw_re_ref = mne.set_bipolar_reference(self.raw, anode=['F3', 'F4', 'C3', 'C4', 'O1', 'O2'], cathode=['A2', 'A1', 'A2', 'A1', 'A2', 'A1'], copy=True, verbose=False)
+        if len(self.raw.ch_names) < 6:
+            self.raw_re_ref = mne.set_bipolar_reference(self.raw, anode=['C4'], cathode=['A1'], copy=True, verbose=False)
+        else:
+            self.raw_re_ref = mne.set_bipolar_reference(self.raw, anode=['F3', 'F4', 'C3', 'C4', 'O1', 'O2'], cathode=['A2', 'A1', 'A2', 'A1', 'A2', 'A1'], copy=True, verbose=False)
 
     def raw_cropping(self):
-        self.raw_re_ref_cropped = self.raw_re_ref.crop(tmin=0, tmax=1000)
+        # load TIB and SOL
+        SOL = self.df_SOL.loc[self.sub_ID, 'Sleep latency (min)']
+        self.raw_re_ref_cropped = self.raw_re_ref.copy().crop(tmin=SOL*60, tmax=SOL*60+330*60)
         return self.raw_re_ref_cropped
 
         
@@ -112,6 +135,7 @@ class automatic_staging:
             raw.filter(0.3, 45, verbose=False) # 0.3 Hz ~ 45 Hz 로 band pass filtering
             # print("Filtering done; Bandpass Filter [0.3 45]...")    
         
+        self.raw = raw
         # Automatic staging of each channel
         self.ensamble_hypno_dic = {} # 각 채널별 hyonogram을 저장하는 dictionary
         self.ensamble_prob_dic = {} # 각 채널별 confidence map을 저장하는 dictionary
@@ -119,6 +143,8 @@ class automatic_staging:
 
         # eeg만 보유하고 있기 때문에, eeg에 대해서만 for문 작성
         for eeg in eegs:
+            if not(eeg in raw.ch_names):
+                continue
             sls = yasa.SleepStaging(raw, eeg_name=eeg)
 
             temp_hypno = yasa.hypno_str_to_int(sls.predict())
@@ -133,6 +159,7 @@ class automatic_staging:
         self.sub_ID = raw.info['subject_info']['his_id']
 
     def ensamble_stagig(self):
+        # for demo
         # -- txt_to_prob.py
         # -- hypnograms
         # -- -- subject_1
@@ -142,17 +169,27 @@ class automatic_staging:
         # -- -- -- predicted_hypnogram.csv
         # -- -- -- probabilistic_hypnogram.csv
 
+        # for real data
+        # -- E:\\probabilistic_hypnogram
+        # -- -- subject_1
+        # -- -- subject_2
+        # -- -- ...
+        # -- -- subject_n
+        # -- -- -- predicted_hypnogram.csv
+        # -- -- -- probabilistic_hypnogram.csv
+        path_save = 'E:\\probabilistic_hypnogram'
+
         sub_ID = self.sub_ID
 
         # Create directory '/hypnograms'
         try:
-            os.mkdir('hypnograms')
+            os.mkdir(path_save)
         except FileExistsError:
             pass
 
         # Create directory '/hypnograms/sub_ID'
         try:
-            os.mkdir('hypnograms\\'+sub_ID)
+            os.mkdir(os.path.join(path_save, sub_ID))
         except FileExistsError:
             pass
 
@@ -167,7 +204,8 @@ class automatic_staging:
         # Find final predicted hypnogram after ensamble
         # --> epoch-by-epoch processing
         staging_str_to_num = {'W': 0, 'R': 4, 'N1': 1, 'N2':2, 'N3':3}
-        for epoch in tqdm(range(len(self.ensamble_hypno_dic[self.dic_key[0]])), desc='Apply ensamble to all combinations ...'):
+        # for epoch in tqdm(range(len(self.ensamble_hypno_dic[self.dic_key[0]])), desc='Apply ensamble to all combinations ...'):
+        for epoch in range(len(self.ensamble_hypno_dic[self.dic_key[0]])):
             temp_epoch = final_prob.iloc[epoch]
             final_hypno.append(staging_str_to_num[temp_epoch.idxmax()])
         df_final_hypno = pd.DataFrame(final_hypno, columns=['stages'])
@@ -180,7 +218,7 @@ class automatic_staging:
         self.df_final_hypno = df_final_hypno
 
         # save both df_final_hypno and df_final_prob as csv files
-        df_final_hypno.to_csv(os.path.join('hypnograms', sub_ID, 'predicted_hypnogram.csv'), index=None)
-        df_final_prob.to_csv(os.path.join('hypnograms', sub_ID, 'probabilistic_hypnogram.csv'))
+        df_final_hypno.to_csv(os.path.join(path_save, sub_ID, 'predicted_hypnogram.csv'), index=None)
+        df_final_prob.to_csv(os.path.join(path_save, sub_ID, 'probabilistic_hypnogram.csv'))
         
 
