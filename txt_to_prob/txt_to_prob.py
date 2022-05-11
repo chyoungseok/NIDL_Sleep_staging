@@ -16,7 +16,7 @@ class txt2np:
     def __init__(self, path_txt, txt_subjects, sub_ID):
         self.path_txt = path_txt
         self.txt_subjects = txt_subjects
-        self.sub_ID = sub_ID
+        self.sub_ID = sub_ID.upper()
         self.QNAN_dic = {}
 
     def txt_filenames(self):     
@@ -28,9 +28,9 @@ class txt2np:
         sub_ID = self.sub_ID
 
         self.temp_txt_subjects = txt_subjects[txt_subjects.str.contains(sub_ID)]
-        if len(self.temp_txt_subjects) != 0:
-            print("\n\n-- now subject ID : {}, number of txt files : {}".format(sub_ID, len(self.temp_txt_subjects)))
-            print(self.temp_txt_subjects.values)
+        # if len(self.temp_txt_subjects) != 0:
+            # print("\n\n-- now subject ID : {}, number of txt files : {}".format(sub_ID, len(self.temp_txt_subjects)))
+            # print(self.temp_txt_subjects.values)
 
     def read_txt(self):
         # input: txt 파일의 filename이 담겨 있는 numpy array
@@ -47,6 +47,10 @@ class txt2np:
             lines = f.readlines()
             f.close()
             lines = lines[5:]
+
+            if len(lines) == 0:
+                # 비어있는 txt인 경우 pass
+                continue
 
             temp_eeg = []
             for line in lines:
@@ -69,14 +73,16 @@ class txt2np:
                     temp_eeg = temp_eeg[:-abs(len(np_all_eeg)-len(temp_eeg))]
 
             np_all_eeg = np.concatenate((np_all_eeg, temp_eeg))
-        np_all_eeg = np_all_eeg.reshape([int(len(np_all_eeg)/len(temp_eeg)) , len(temp_eeg)])
+        if len(lines) != 0:
+            # txt 파일이 비어있는 경우가 아닐 때, np_all_eeg 할당
+            np_all_eeg = np_all_eeg.reshape([int(len(np_all_eeg)/len(temp_eeg)) , len(temp_eeg)])
         return np_all_eeg
         
 
 class np2raw:
-    def __init__(self, sub_ID, df_SOL):
-        self.sub_ID = sub_ID
-        self.df_SOL = df_SOL
+    def __init__(self, sub_ID, SOL):
+        self.sub_ID = sub_ID.upper()
+        self.SOL = SOL
 
     def np2raw(self, np_all_eeg):
         # input: np_all_eeg
@@ -87,7 +93,7 @@ class np2raw:
                 break
         info = mne.create_info(ch_names, temp_sfreq, ch_types, verbose=None)
         info['subject_info'] = {'his_id':self.sub_ID}
-        self.raw = mne.io.RawArray(np_all_eeg, info)
+        self.raw = mne.io.RawArray(np_all_eeg, info, verbose=False)
         self.temp_sfreq = temp_sfreq
 
     def re_ref(self):
@@ -98,8 +104,8 @@ class np2raw:
 
     def raw_cropping(self):
         # load TIB and SOL
-        SOL = self.df_SOL.loc[self.sub_ID, 'Sleep latency (min)']
-        self.raw_re_ref_cropped = self.raw_re_ref.copy().crop(tmin=SOL*60, tmax=SOL*60+330*60)
+        # SOL = self.df_SOL.loc[self.sub_ID, 'Sleep latency (min)'
+        self.raw_re_ref_cropped = self.raw_re_ref.copy().crop(tmin=self.SOL*60, tmax=self.SOL*60+330*60)
         return self.raw_re_ref_cropped
 
         
@@ -121,7 +127,7 @@ class automatic_staging:
         eogs = []
         eegs = ['F3-A2', 'F4-A1', 'C3-A2', 'C4-A1', 'O1-A2', 'O2-A1']
         chs = raw.ch_names
-        print(f"Available channels: {chs}")
+        # print(f"Available channels: {chs}")
 
         # Filtering
         if filt_flag == 1:
