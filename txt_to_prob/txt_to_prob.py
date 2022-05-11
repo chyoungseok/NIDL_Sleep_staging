@@ -43,7 +43,7 @@ class txt2np:
         for now_eeg in ch_names:
             temp_eeg_txt = f_names_txt[f_names_txt.str.contains(now_eeg)].values[0]
             # print(f"now eeg = {now_eeg}, {temp_eeg_txt}")
-            f = open(os.path.join(self.path_txt, temp_eeg_txt), encoding='cp949')#'ISO-8859-1')
+            f = open(os.path.join(self.path_txt, temp_eeg_txt), encoding='ISO-8859-1')#'cp949')#'ISO-8859-1')
             lines = f.readlines()
             f.close()
             lines = lines[5:]
@@ -164,7 +164,7 @@ class automatic_staging:
         # update self.sub_ID
         self.sub_ID = raw.info['subject_info']['his_id']
 
-    def ensamble_stagig(self):
+    def ensamble_stagig(self, path_save):
         # for demo
         # -- txt_to_prob.py
         # -- hypnograms
@@ -183,7 +183,7 @@ class automatic_staging:
         # -- -- subject_n
         # -- -- -- predicted_hypnogram.csv
         # -- -- -- probabilistic_hypnogram.csv
-        path_save = 'E:\\probabilistic_hypnogram'
+        # path_save = 'E:\\probabilistic_hypnogram'
 
         sub_ID = self.sub_ID
 
