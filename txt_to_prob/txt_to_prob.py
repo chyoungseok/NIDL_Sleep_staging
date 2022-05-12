@@ -19,7 +19,7 @@ class txt2np:
         self.sub_ID = sub_ID.upper()
         self.QNAN_dic = {}
 
-    def txt_filenames(self):     
+    def txt_filename_with_sub_ID(self):     
         # input: sub_ID
         # sub_ID를 포함하고 있는 txt 파일의 filename을 pd.Series로 반환 
         # output: a pd.Series that contains filenames of txt file with sub_ID  
