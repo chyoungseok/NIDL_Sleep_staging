@@ -36,6 +36,8 @@ class txt2np:
         # input: txt 파일의 filename이 담겨 있는 numpy array
         # f_names_txt에 담겨 있는 파일들을 읽어서, 하나의 numpy array로 반환
         # output: np_all_eeg, a numpy array that contains eeg data of all txt files in the f_names_txt
+        
+        # exclusion_1) txt파일이 비어 있는 경우 --> continue 실행
 
         f_names_txt = self.temp_txt_subjects
         np_all_eeg = np.array([])
@@ -49,6 +51,7 @@ class txt2np:
             lines = lines[5:]
 
             if len(lines) == 0:
+                # exclusion
                 # 비어있는 txt인 경우 pass
                 continue
 
@@ -75,6 +78,7 @@ class txt2np:
             np_all_eeg = np.concatenate((np_all_eeg, temp_eeg))
         if len(lines) != 0:
             # txt 파일이 비어있는 경우가 아닐 때, np_all_eeg 할당
+            # txt 파일이 비어있는 경우, np_all_eeg는 빈 array가 되어 return 됨
             np_all_eeg = np_all_eeg.reshape([int(len(np_all_eeg)/len(temp_eeg)) , len(temp_eeg)])
         return np_all_eeg
         
